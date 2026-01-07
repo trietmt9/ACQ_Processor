@@ -1,0 +1,5 @@
+build/*
+tSCS_data/*
+metadata/*
+label/*
+.claude/
