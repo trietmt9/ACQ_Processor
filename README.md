@@ -2,7 +2,7 @@
 
 A Qt6-based desktop application for processing, filtering, and analyzing BIOPAC ACQ physiological data files. This tool provides an intuitive interface for DSP engineers to load ACQ files, apply various filters, and annotate signal segments with custom labels.
 
-![ACQ Signal Processor](docs/screenshot.png)
+![ACQ Signal Processor](docs/Screenshot.png)
 
 ## Quick Start
 
