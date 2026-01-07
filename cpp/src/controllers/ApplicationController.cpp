@@ -117,10 +117,37 @@ bool ApplicationController::callPythonConverter(const QString& acqFilePath) {
 
     // Check for virtual environment
     QString pythonCmd = "python3";
-    QString venvPath = QDir::homePath() + "/.pyvenv/bin/python3";
-    if (QFile::exists(venvPath)) {
-        pythonCmd = venvPath;
-        std::cout << "Using virtual environment Python" << std::endl;
+
+    // First, check if VIRTUAL_ENV environment variable is set (most reliable)
+    QByteArray venvEnv = qgetenv("VIRTUAL_ENV");
+    if (!venvEnv.isEmpty()) {
+        QString venvPath = QString::fromLocal8Bit(venvEnv) + "/bin/python3";
+        if (QFile::exists(venvPath)) {
+            pythonCmd = venvPath;
+            std::cout << "Using active virtual environment: " << venvEnv.toStdString() << std::endl;
+        }
+    } else {
+        // Fallback: Check common venv directory names in project and home directory
+        QStringList venvLocations = {
+            QDir::currentPath() + "/.venv/bin/python3",
+            QDir::currentPath() + "/venv/bin/python3",
+            QDir::currentPath() + "/.pyvenv/bin/python3",
+            QDir::currentPath() + "/env/bin/python3",
+            QDir::homePath() + "/.venv/bin/python3",
+            QDir::homePath() + "/.pyvenv/bin/python3"
+        };
+
+        for (const QString& venvPath : venvLocations) {
+            if (QFile::exists(venvPath)) {
+                pythonCmd = venvPath;
+                std::cout << "Using virtual environment Python: " << venvPath.toStdString() << std::endl;
+                break;
+            }
+        }
+    }
+
+    if (pythonCmd == "python3") {
+        std::cout << "Using system Python (no virtual environment detected)" << std::endl;
     }
 
     // Build command
